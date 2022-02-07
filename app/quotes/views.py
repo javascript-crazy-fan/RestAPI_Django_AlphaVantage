@@ -7,6 +7,7 @@ import requests
 from .models import BTCPrice
 from .serializers import PriceSerializer
 from django.conf import settings
+from app.celery import app
 
 
 api_key = settings.API_KEY
@@ -21,7 +22,6 @@ class GetPrice(APIView):
         return Response({
                     "data": serializer.data,
                 }, status=status.HTTP_200_OK)
-
 
     def post(self, request, *args, **kwargs):
         # api_url = f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey={api_key}'
@@ -41,3 +41,8 @@ class GetPrice(APIView):
             return Response(
                 {"message": "Price could not be received."},
                 status=status.HTTP_408_REQUEST_TIMEOUT)
+
+getPrice = GetPrice()
+@app.task
+def getExchangeRate():
+    return getPrice.post
