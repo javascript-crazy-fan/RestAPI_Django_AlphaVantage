@@ -10,7 +10,7 @@ app.autodiscover_tasks()
 
 app.conf.CELERYBEAT_SCHEDULE = {
     "price": {
-        "task": "quotes.views.post",
+        "task": "quotes.views.getExchangeRate",
         "schedule": crontab(hour="*"),
     },
 }
